@@ -1,9 +1,13 @@
 {
   "name": "sentinal-js-sdk",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/indrajeet-ambadekar/sentinal-js-sdk.git"
+  },
   "exports": {
     ".": {
       "import": "./dist/index.js",
