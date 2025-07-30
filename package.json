@@ -1,6 +1,6 @@
 {
   "name": "sentinal-js-sdk",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -25,7 +25,8 @@
     "build": "tsup",
     "dev": "tsup --watch",
     "lint": "eslint 'src/**/*.{ts,tsx}'",
-    "lint:fix": "eslint 'src/**/*.{ts,tsx}' --fix"
+    "lint:fix": "eslint 'src/**/*.{ts,tsx}' --fix",
+    "watch": "onchange 'src/**/*.*' -- prettier --write {{changed}}"
   },
   "devDependencies": {
     "@types/node": "^24.1.0",
@@ -35,7 +36,8 @@
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-prettier": "^5.1.0",
-    "prettier": "^3.0.0",
+    "onchange": "^7.1.0",
+    "prettier": "^3.6.2",
     "tsup": "^7.2.0",
     "typescript": "^5.4.0"
   }

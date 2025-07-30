@@ -1,12 +1,14 @@
 // src/interceptors/console.ts
-import { log } from '../core.js';
+import { log } from "../core.js";
 
-type ConsoleMethod = 'log' | 'info' | 'warn' | 'error' | 'debug';
+type ConsoleMethod = "log" | "info" | "warn" | "error" | "debug";
 
-const originalConsole: Partial<Record<ConsoleMethod, (...args: any[]) => void>> = {};
+const originalConsole: Partial<
+  Record<ConsoleMethod, (...args: any[]) => void>
+> = {};
 
 export function interceptConsole() {
-  const methods: ConsoleMethod[] = ['log', 'info', 'warn', 'error', 'debug'];
+  const methods: ConsoleMethod[] = ["log", "info", "warn", "error", "debug"];
 
   methods.forEach((method) => {
     if (!originalConsole[method]) {
@@ -21,7 +23,7 @@ export function interceptConsole() {
 }
 
 export function restoreConsole() {
-  const methods: ConsoleMethod[] = ['log', 'info', 'warn', 'error', 'debug'];
+  const methods: ConsoleMethod[] = ["log", "info", "warn", "error", "debug"];
   methods.forEach((method) => {
     if (originalConsole[method]) {
       console[method] = originalConsole[method]!;
