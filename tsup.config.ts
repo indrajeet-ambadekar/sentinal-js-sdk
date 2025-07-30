@@ -7,6 +7,6 @@ export default defineConfig({
   splitting: false,
   clean: true,
   target: 'node18',
-  platform: 'node', // <-- Important: ensures tsup treats it as a Node lib
+  platform: 'neutral', // <-- Important: ensures tsup treats it as a Node lib
   external: ['node:assert'], // <-- Critical: prevent bundling these
 });

@@ -1,9 +1,8 @@
 // src/buffer.ts
-import os from "os";
 import { LoggerConfig, LogEntry } from "./types.js";
 import { internalLog } from "./internalLogger.js";
 import { sendLogToAPI } from "./utils/network.js";
-import { gatherMetaData } from "./utils/platform.js";
+import { gatherMetaData } from "./utils/meta.js";
 
 let config: LoggerConfig;
 let buffer: LogEntry[] = [];
@@ -27,21 +26,30 @@ function inferServiceName(): string {
     return window.location.hostname;
   }
 
-  const interfaces = os.networkInterfaces();
-  for (const iface of Object.values(interfaces)) {
-    for (const net of iface ?? []) {
-      if (net.family === "IPv4" && !net.internal) {
-        return net.address;
-      }
+  // Node.js context
+  if (typeof process !== "undefined") {
+    if (process.env.npm_package_name) {
+      return process.env.npm_package_name;
     }
+
+    try {
+      const pkg = require(`${process.cwd()}/package.json`);
+      if (pkg?.name) {
+        return pkg.name;
+      }
+    } catch (err) {
+      // ignore error
+    }
+
+    return "node-app";
   }
 
   return "unknown-service";
 }
 
-export function enqueueLog(entry: LogEntry) {
+export async function enqueueLog(entry: LogEntry) {
   ensureInitialized();
-  const metaData = gatherMetaData();
+  const metaData = await gatherMetaData();
 
   const normalizedEntry: LogEntry = {
     level: entry.level ?? "log",

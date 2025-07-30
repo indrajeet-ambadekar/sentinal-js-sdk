@@ -1,35 +1,66 @@
 import { LoggerConfig } from "./types.js";
 import { initBuffer, flush, enqueueLog } from "./buffer.js";
-const devUrl: string = "http://local-sentinal.reviewmonk.io:81/server/log";
-const prodUrl: string = "http://sentinal.reviewmonk.io/server/log";
-// Define default config as a separate constant
+import { internalLog } from "./internalLogger.js";
+
+const PROD_URL = "https://sentinal.reviewmonk.io/server/log";
+
+function inferDevUrl(): string {
+  return `http://local-sentinal.reviewmonk.io:81/server/log`;
+}
+
+// Define default config
 const defaultConfig: LoggerConfig = {
-  apiUrl: prodUrl,
+  apiUrl: PROD_URL,
   projectKey: "",
   context: {},
   bufferLimit: 10,
   flushInterval: 2000,
   retries: 3,
+  sandbox: false, // Ensure sandbox has a default value
 };
 
-// Current active config (will be overwritten by user config at runtime)
+// Internal config state
 let config: LoggerConfig = { ...defaultConfig };
 
 export function configureLogger(userConfig: Partial<LoggerConfig>) {
-  if (!userConfig.projectKey || userConfig.projectKey.length === 0)
+  if (!userConfig.projectKey || userConfig.projectKey.length === 0) {
     throw new Error(
-      "Sentinal project key is missing. Please visit https://sentinal.reviemwonk.io to obtain a project key",
+      "Sentinal project key is missing. Please visit https://sentinal.reviewmonk.io to obtain a project key",
     );
+  }
+
+  // Determine the API URL based on sandbox and environment
+  let determinedApiUrl: string;
+
+  const isBrowser =
+    typeof window !== "undefined" && typeof document !== "undefined";
+
+  if (userConfig.sandbox === true) {
+    if (isBrowser) {
+      determinedApiUrl =
+        userConfig.apiUrl ||
+        "https://local-sentinal.reviewmonk.io:444/server/log";
+    } else {
+      determinedApiUrl =
+        userConfig.apiUrl ||
+        "http://local-sentinal.reviewmonk.io:81/server/log";
+    }
+  } else {
+    determinedApiUrl = userConfig.apiUrl ?? PROD_URL;
+  }
+
   config = {
     ...defaultConfig,
     ...userConfig,
-    apiUrl: userConfig.sandbox ? devUrl : prodUrl,
+    apiUrl: determinedApiUrl,
     context: {
       ...defaultConfig.context,
       ...userConfig.context,
     },
+    sandbox: userConfig.sandbox ?? defaultConfig.sandbox,
   };
 
+  internalLog.log("Sentinal API base URL:", config.apiUrl);
   initBuffer(config);
 }
 
@@ -47,7 +78,7 @@ export function log(
 ) {
   enqueueLog({
     level,
-    message: args, // Keep as array to support multi-arg logging
+    message: args,
     timestamp: new Date().toISOString(),
     context: config.context,
     projectKey: config.projectKey,
