@@ -2,7 +2,7 @@
 import { LoggerConfig, LogEntry } from "./types.js";
 import { internalLog } from "./internalLogger.js";
 import { sendLogToAPI } from "./utils/network.js";
-import { gatherMetaData } from "./utils/meta.js";
+import { gatherMetaData } from "./utils/meta";
 
 let config: LoggerConfig;
 let buffer: LogEntry[] = [];
@@ -17,7 +17,7 @@ export function initBuffer(userConfig: LoggerConfig) {
 
 function ensureInitialized() {
   if (!config) {
-    throw new Error("Logger not initialized. Call configureLogger() first.");
+    throw new Error("Logger not initialized. Call initSentinal() first.");
   }
 }
 
@@ -47,9 +47,9 @@ function inferServiceName(): string {
   return "unknown-service";
 }
 
-export async function enqueueLog(entry: LogEntry) {
+export function enqueueLog(entry: LogEntry) {
   ensureInitialized();
-  const metaData = await gatherMetaData();
+  const metaData = gatherMetaData();
 
   const normalizedEntry: LogEntry = {
     level: entry.level ?? "log",
@@ -94,8 +94,11 @@ export function flush() {
 function send(batch: LogEntry[], retriesLeft: number) {
   ensureInitialized();
   sendLogToAPI(config.apiUrl, batch, config.projectKey)
-    .then(() => {})
+    .then(() => {
+      internalLog.log("SUCCESS IN SENDING LOG")
+    })
     .catch((err) => {
+      internalLog.log("ERROR IN SENDING LOG",err)
       if (retriesLeft > 0) {
         setTimeout(() => send(batch, retriesLeft - 1), config.flushInterval);
       } else {

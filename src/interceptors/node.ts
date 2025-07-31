@@ -1,25 +1,43 @@
-// src/interceptors/node.ts
-
-import { log } from "../core.js";
-
-let hasInitialized = false;
+import { log } from '../core';
 
 export function interceptNodeErrors() {
-  if (hasInitialized || typeof process === "undefined") return;
-  hasInitialized = true;
+  const originalConsoleLog = console.log;
+  const originalConsoleError = console.error;
+  const originalConsoleWarn = console.warn;
 
-  // Handle uncaught exceptions
-  process.on("uncaughtException", (err) => {
-    log("error", "[uncaughtException]", {
-      message: err?.message,
-      stack: err?.stack,
+  const serialize = (args: any[]) => {
+    return args.map((arg) => {
+      if (typeof arg === 'object' && arg !== null) {
+        try {
+          return JSON.stringify(arg);
+        } catch (error) {
+          return 'Un-serializable object';
+        }
+      }
+      return arg;
     });
+  };
+
+  console.log = (...args: any[]) => {
+    log('log', ...serialize(args));
+    originalConsoleLog.apply(console, args);
+  };
+
+  console.error = (...args: any[]) => {
+    log('error', ...serialize(args));
+    originalConsoleError.apply(console, args);
+  };
+
+  console.warn = (...args: any[]) => {
+    log('warn', ...serialize(args));
+    originalConsoleWarn.apply(console, args);
+  };
+
+  process.on('uncaughtException', (error) => {
+    log('error', `Uncaught Exception: ${error.message}`);
   });
 
-  // Handle unhandled Promise rejections
-  process.on("unhandledRejection", (reason: any) => {
-    log("error", "[unhandledRejection]", {
-      reason: reason?.stack || reason?.toString?.() || null,
-    });
+  process.on('unhandledRejection', (reason, promise) => {
+    log('error', `Unhandled Rejection: ${reason}`);
   });
 }

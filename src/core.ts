@@ -1,6 +1,9 @@
 import { LoggerConfig } from "./types.js";
 import { initBuffer, flush, enqueueLog } from "./buffer.js";
 import { internalLog } from "./internalLogger.js";
+import { interceptBrowserErrors } from "./interceptors/browser.js";
+import { interceptConsole } from "./interceptors/console.js";
+import { interceptNodeErrors } from "./interceptors/node.js";
 
 const PROD_URL = "https://sentinal.reviewmonk.io/server/log";
 
@@ -22,7 +25,7 @@ const defaultConfig: LoggerConfig = {
 // Internal config state
 let config: LoggerConfig = { ...defaultConfig };
 
-export function configureLogger(userConfig: Partial<LoggerConfig>) {
+export function initSentinal(userConfig: Partial<LoggerConfig>) {
   if (!userConfig.projectKey || userConfig.projectKey.length === 0) {
     throw new Error(
       "Sentinal project key is missing. Please visit https://sentinal.reviewmonk.io to obtain a project key",
@@ -62,6 +65,13 @@ export function configureLogger(userConfig: Partial<LoggerConfig>) {
 
   internalLog.log("Sentinal API base URL:", config.apiUrl);
   initBuffer(config);
+
+  if (isBrowser) {
+    interceptConsole();
+    interceptBrowserErrors();
+  } else {
+    interceptNodeErrors();
+  }
 }
 
 export function setContext(context: Record<string, any>) {
