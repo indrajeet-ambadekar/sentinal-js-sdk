@@ -92,15 +92,41 @@ export function flush() {
 }
 
 function checkServerHealth(url: string): Promise<boolean> {
-  try {
-    const healthUrl = new URL(url);
-    return fetch(healthUrl.origin, { method: "HEAD" }) // Ensures we check just the host, not a logging endpoint
-      .then((res) => res.ok)
-      .catch(() => false);
-  } catch (err) {
-    internalLog.log("Invalid API URL for health check:", err);
-    return Promise.resolve(false);
-  }
+  // internalLog.log(`[Health Check] GET: ${url}`);
+
+  return fetch(url, { method: "GET" })
+    .then(async (res) => {
+      const body = await res.json().catch(() => ({}));
+
+      const expected = {
+        message: "Cannot GET /server/log",
+        error: "Not Found",
+        statusCode: 404,
+      };
+
+      const isExpected404 =
+        res.status === 404 &&
+        body.message === expected.message &&
+        body.error === expected.error &&
+        body.statusCode === expected.statusCode;
+
+      if (isExpected404) {
+        // internalLog.log(
+        //   `[Health Check Success] Server is up. Received expected 404.`,
+        // );
+        return true;
+      } else {
+        // internalLog.log(
+        //   `[Health Check Failure] Unexpected response from ${url}:`,
+        //   body,
+        // );
+        return false;
+      }
+    })
+    .catch((err) => {
+      // internalLog.log(`[Health Check Error] ${url} failed:`, err);
+      return false;
+    });
 }
 
 function send(batch: LogEntry[], retriesLeft: number) {
