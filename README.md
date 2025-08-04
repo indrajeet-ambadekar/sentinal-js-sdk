@@ -14,9 +14,9 @@ A lightweight, framework-agnostic JavaScript logging SDK that captures logs, err
 ## Installation
 
 ```bash
-npm install sentinal-sdk
+npm install sentinal-monitor
 # or
-yarn add sentinal-sdk
+yarn add sentinal-monitor
 ```
 
 ## Quick Start
@@ -28,7 +28,7 @@ You must initialize the SDK once at your application's entry point.
 In your main `index.js` or `main.ts`:
 
 ```javascript
-import { initSentinal } from 'sentinal-sdk';
+import { initSentinal } from 'sentinal-monitor';
 
 initSentinal({
   projectKey: 'YOUR_PROJECT_KEY',
@@ -43,7 +43,7 @@ console.log('Hello from the browser!');
 In your main entry file (e.g., `server.js`, `index.js`, `main.ts`):
 
 ```javascript
-import { initSentinal } from 'sentinal-sdk';
+import { initSentinal } from 'sentinal-monitor';
 
 initSentinal({
   projectKey: 'YOUR_PROJECT_KEY',
@@ -60,7 +60,7 @@ console.log('This log will be captured by Sentinal.');
 The Sentinal SDK is designed to be universal. You can use the same import statement in any project, and the correct version (browser or Node.js) will be used automatically.
 
 ```javascript
-import { initSentinal, log, setContext } from 'sentinal-sdk';
+import { initSentinal, log, setContext } from 'sentinal-monitor';
 ```
 
 This is made possible by the `"exports"` field in `package.json`, which tells Node.js and modern bundlers which files to use based on the environment. You never need to change your import path.
@@ -92,7 +92,7 @@ Manually sends a log to Sentinal.
 - `...args`: One or more values to log (e.g., strings, objects).
 
 ```javascript
-import { log } from 'sentinal-sdk';
+import { log } from 'sentinal-monitor';
 
 log('info', 'User has signed up', { userId: '12345' });
 ```
@@ -104,7 +104,7 @@ Enriches all subsequent logs with the provided key-value pairs. This is useful f
 - `context`: An object with data to merge into the global context.
 
 ```javascript
-import { setContext } from 'sentinal-sdk';
+import { setContext } from 'sentinal-monitor';
 
 // Set user information after login
 setContext({
