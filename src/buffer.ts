@@ -17,7 +17,7 @@ export function initBuffer(userConfig: LoggerConfig) {
 
 function ensureInitialized() {
   if (!config) {
-    throw new Error("Logger not initialized. Call initsentinal() first.");
+    throw new Error("Logger not initialized. Call initSentinal() first.");
   }
 }
 
@@ -95,10 +95,10 @@ function send(batch: LogEntry[], retriesLeft: number) {
   ensureInitialized();
   sendLogToAPI(config.apiUrl, batch, config.projectKey)
     .then(() => {
-      internalLog.log("SUCCESS IN SENDING LOG")
+      internalLog.log(`SUCCESS IN SENDING ${batch.length || 0} LOG`);
     })
     .catch((err) => {
-      internalLog.log("ERROR IN SENDING LOG",err)
+      internalLog.log("ERROR IN SENDING LOG", err);
       if (retriesLeft > 0) {
         setTimeout(() => send(batch, retriesLeft - 1), config.flushInterval);
       } else {

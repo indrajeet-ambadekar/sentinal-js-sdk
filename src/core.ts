@@ -25,7 +25,7 @@ const defaultConfig: LoggerConfig = {
 // Internal config state
 let config: LoggerConfig = { ...defaultConfig };
 
-export function initsentinal(userConfig: Partial<LoggerConfig>) {
+export function initSentinal(userConfig: Partial<LoggerConfig>) {
   if (!userConfig.projectKey || userConfig.projectKey.length === 0) {
     throw new Error(
       "sentinal project key is missing. Please visit https://sentinal.reviewmonk.io to obtain a project key",

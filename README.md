@@ -1,16 +1,15 @@
-# sentinal JS SDK
+# Sentinal JS SDK
 
-A lightweight, framework-agnostic JavaScript logging SDK that captures logs, errors, and exceptions from client-side and server-side applications, and forwards them to the sentinal log ingestion API.
+A lightweight, framework-agnostic JavaScript logging SDK that captures logs, errors, and exceptions from client-side and server-side applications and forwards them to the Sentinal log ingestion API.
 
 ## Features
 
-- Captures console logs (`log`, `info`, `warn`, `error`)
-- Captures unhandled errors and promise rejections
-- Buffers logs and sends in batches
-- Retries on failure with backoff
-- Supports custom metadata (e.g., user/session IDs)
-- Works in both Node.js and browser environments
-- Tiny and tree-shakeable
+- **Universal:** Works in both Node.js and browser environments with the same API.
+- **Automatic Error Capture:** Captures `console` output, unhandled errors, and promise rejections.
+- **Efficient:** Buffers logs and sends them in batches to reduce network traffic.
+- **Resilient:** Retries sending logs with backoff on network failure.
+- **Context-Aware:** Enrich logs with custom metadata (e.g., user, session, or transaction IDs).
+- **Tiny & Tree-Shakeable:** Minimal footprint for client-side applications.
 
 ## Installation
 
@@ -20,90 +19,136 @@ npm install sentinal-sdk
 yarn add sentinal-sdk
 ```
 
-## Usage
+## Quick Start
 
-You must call `configureLogger(config)` once at app startup.
+You must initialize the SDK once at your application's entry point.
 
-### In a Browser App
+### In a Browser App (e.g., React, Vue, Svelte)
 
-When using a bundler like Webpack, Rollup, or Vite, you should import from `sentinal-sdk` and let the bundler resolve the correct version.
+In your main `index.js` or `main.ts`:
 
-```js
-import { configureLogger } from 'sentinal-sdk';
+```javascript
+import { initSentinal } from 'sentinal-sdk';
 
-configureLogger({
+initSentinal({
   projectKey: 'YOUR_PROJECT_KEY',
 });
 
+// All console logs, warnings, and errors will now be captured automatically.
 console.log('Hello from the browser!');
 ```
 
-### In Node.js (Express, Next.js, NestJS, etc.)
+### In a Node.js App (e.g., Express, NestJS)
 
-In your main entry file (e.g., `server.js`, `index.js`, `main.ts`), simply configure the logger. It will automatically intercept all console output.
+In your main entry file (e.g., `server.js`, `index.js`, `main.ts`):
 
-```js
-import { configureLogger } from 'sentinal-sdk';
+```javascript
+import { initSentinal } from 'sentinal-sdk';
 
-configureLogger({
+initSentinal({
   projectKey: 'YOUR_PROJECT_KEY',
 });
 
-// The rest of your application code...
-console.log('This will be captured by sentinal');
+// The rest of your application...
+console.log('This log will be captured by Sentinal.');
 ```
 
-## Configuration Options
+---
 
-You must call `configureLogger(config)` before using the logger. Here’s a list of supported config options:
+## How It Works: Universal Imports
 
-| Key              | Type               | Required | Description                                                                  |
-|------------------|--------------------|----------|------------------------------------------------------------------------------|
-| `projectKey`     | `string`           | ✅       | Your sentinal project key.                                                   |
-| `apiUrl`         | `string`           | ❌       | Custom API endpoint for self-hosted sentinal backend.                        |
-| `flushInterval`  | `number` (ms)      | ❌       | How frequently to flush logs. Default: `2000`                                |
-| `bufferLimit`    | `number`           | ❌       | Max logs to buffer before flushing. Default: `10`                            |
-| `retries`        | `number`           | ❌       | Retry attempts on failure. Default: `3`                                      |
-| `sandbox`        | `boolean`          | ❌       | Enable sandbox mode for local development. Default: `false`                  |
+The Sentinal SDK is designed to be universal. You can use the same import statement in any project, and the correct version (browser or Node.js) will be used automatically.
 
-## Log Format
+```javascript
+import { initSentinal, log, setContext } from 'sentinal-sdk';
+```
 
-Logs sent to the server follow this structure:
+This is made possible by the `"exports"` field in `package.json`, which tells Node.js and modern bundlers which files to use based on the environment. You never need to change your import path.
 
-```json
-{
-  "level": "info",
-  "message": "Something happened",
-  "metaData": {
-    "platform": "browser",
-    "hostname": "localhost",
-    "href": "http://localhost:3000/",
-    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
-    "favicon": "http://localhost:3000/favicon.ico",
-    "language": "en-US",
-    "languages": [
-      "en-US",
-      "en"
-    ],
-    "devicePlatform": "MacIntel",
-    "screenResolution": "1728x1117",
-    "timezone": "Asia/Calcutta",
-    "cookiesEnabled": true,
-    "doNotTrack": null
+---
+
+## API Reference
+
+### `initSentinal(config)`
+
+Initializes the SDK. This must be called once before any other SDK functions.
+
+| Key             | Type          | Required | Description                                                                 |
+| --------------- | ------------- | :------: | --------------------------------------------------------------------------- |
+| `projectKey`    | `string`      |    ✅    | Your Sentinal project key.                                                  |
+| `apiUrl`        | `string`      |    ❌    | Custom API endpoint for self-hosted Sentinal instances.                     |
+| `flushInterval` | `number` (ms) |    ❌    | How frequently to flush the log buffer. Default: `2000`.                     |
+| `bufferLimit`   | `number`      |    ❌    | Maximum number of logs to buffer before flushing. Default: `10`.            |
+| `retries`       | `number`      |    ❌    | Number of retry attempts on network failure. Default: `3`.                  |
+| `sandbox`       | `boolean`     |    ❌    | Enable sandbox mode for local development. Default: `false`.                |
+| `context`       | `object`      |    ❌    | Global key-value pairs to attach to every log.                              |
+| `serviceName`   | `string`      |    ❌    | A name for your application. Inferred automatically if not set.             |
+
+### `log(level, ...args)`
+
+Manually sends a log to Sentinal.
+
+- `level`: `'log' | 'info' | 'warn' | 'error' | 'debug'`
+- `...args`: One or more values to log (e.g., strings, objects).
+
+```javascript
+import { log } from 'sentinal-sdk';
+
+log('info', 'User has signed up', { userId: '12345' });
+```
+
+### `setContext(context)`
+
+Enriches all subsequent logs with the provided key-value pairs. This is useful for adding session or user information.
+
+- `context`: An object with data to merge into the global context.
+
+```javascript
+import { setContext } from 'sentinal-sdk';
+
+// Set user information after login
+setContext({
+  user: {
+    id: 'user-99',
+    email: 'test@example.com',
   },
-  "service": "localhost",
-  "timestamp": "2025-07-31T10:00:00.000Z",
-  "projectKey": "YOUR_PROJECT_KEY"
-}
+});
+
+console.log('User context has been set.'); // This log will include the user data
 ```
 
-## Development & Debugging
+---
 
-To enable SDK debug logs in development:
+## Debugging and Local Development
 
-```js
-localStorage.setItem('sentinal_DEBUG', 'true');
+### Seeing Internal SDK Logs
+
+To see what the Sentinal SDK is doing internally (e.g., when it's flushing logs), you can enable its internal logger.
+
+- **In the browser:**
+  ```javascript
+  // Open the developer console and run:
+  localStorage.setItem('sentinal_DEBUG', 'true');
+  ```
+- **In Node.js:**
+  ```bash
+  # Set an environment variable before running your app:
+  export SENTINAL_DEBUG=true
+  node your-app.js
+  ```
+
+### Using Sandbox Mode
+
+For local development, it's highly recommended to use the `sandbox` flag. This prevents your development logs from being mixed with production data.
+
+```javascript
+initSentinal({
+  projectKey: 'YOUR_PROJECT_KEY',
+  sandbox: true, // Enable sandbox mode
+});
 ```
+
+When `sandbox` is `true`, the SDK will automatically point to a local or development-specific Sentinal endpoint, which you can configure with the `apiUrl` option if needed.
 
 ## License
 
