@@ -15,9 +15,9 @@ A lightweight, framework-agnostic JavaScript logging SDK that captures logs, err
 ## Installation
 
 ```bash
-npm install sentinal-js-sdk
+npm install sentinal-sdk
 # or
-yarn add sentinal-js-sdk
+yarn add sentinal-sdk
 ```
 
 ## Usage
@@ -26,10 +26,10 @@ You must call `configureLogger(config)` once at app startup.
 
 ### In a Browser App
 
-When using a bundler like Webpack, Rollup, or Vite, you should import from `sentinal-js-sdk` and let the bundler resolve the correct version.
+When using a bundler like Webpack, Rollup, or Vite, you should import from `sentinal-sdk` and let the bundler resolve the correct version.
 
 ```js
-import { configureLogger } from 'sentinal-js-sdk';
+import { configureLogger } from 'sentinal-sdk';
 
 configureLogger({
   projectKey: 'YOUR_PROJECT_KEY',
@@ -43,7 +43,7 @@ console.log('Hello from the browser!');
 In your main entry file (e.g., `server.js`, `index.js`, `main.ts`), simply configure the logger. It will automatically intercept all console output.
 
 ```js
-import { configureLogger } from 'sentinal-js-sdk';
+import { configureLogger } from 'sentinal-sdk';
 
 configureLogger({
   projectKey: 'YOUR_PROJECT_KEY',
