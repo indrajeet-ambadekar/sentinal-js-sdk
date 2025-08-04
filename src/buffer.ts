@@ -91,17 +91,40 @@ export function flush() {
   send(batch, config.retries);
 }
 
+function checkServerHealth(url: string): Promise<boolean> {
+  try {
+    const healthUrl = new URL(url);
+    return fetch(healthUrl.origin, { method: "HEAD" }) // Ensures we check just the host, not a logging endpoint
+      .then((res) => res.ok)
+      .catch(() => false);
+  } catch (err) {
+    internalLog.log("Invalid API URL for health check:", err);
+    return Promise.resolve(false);
+  }
+}
+
 function send(batch: LogEntry[], retriesLeft: number) {
   ensureInitialized();
-  sendLogToAPI(config.apiUrl, batch, config.projectKey)
-    .then(() => {
-      internalLog.log(`SUCCESS IN SENDING ${batch.length || 0} LOG`);
-    })
-    .catch((err) => {
-      internalLog.log("ERROR IN SENDING LOG", err);
-      if (retriesLeft > 0) {
-        setTimeout(() => send(batch, retriesLeft - 1), config.flushInterval);
-      } else {
-      }
-    });
+
+  if (!batch || batch.length === 0) {
+    return;
+  }
+
+  checkServerHealth(config.apiUrl).then((isAlive) => {
+    if (!isAlive) {
+      internalLog.log(`[Sentinal Monitor Dump]`, JSON.stringify(batch));
+      return;
+    }
+
+    sendLogToAPI(config.apiUrl, batch, config.projectKey)
+      .then(() => {
+        internalLog.log(`SUCCESS IN SENDING ${batch.length || 0} LOG`);
+      })
+      .catch((err) => {
+        internalLog.log("ERROR IN SENDING LOG", err);
+        if (retriesLeft > 0) {
+          setTimeout(() => send(batch, retriesLeft - 1), config.flushInterval);
+        }
+      });
+  });
 }
