@@ -1,5 +1,5 @@
 export {
-  initSentinal,
+  initsentinal,
   setContext,
   getContext,
   log,

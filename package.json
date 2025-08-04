@@ -1,12 +1,12 @@
 {
-  "name": "sentinal-js-sdk",
-  "version": "0.0.6",
+  "name": "sentinal-sdk",
+  "version": "0.0.1",
   "type": "module",
   "main": "dist/node/index.js",
   "types": "dist/node/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/indrajeet-ambadekar/sentinal-js-sdk.git"
+    "url": "https://github.com/indrajeet-ambadekar/sentinal-sdk.git"
   },
   "exports": {
     ".": {
@@ -29,7 +29,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "rm -rf dist && tsup",
     "dev": "tsup --watch",
     "lint": "eslint 'src/**/*.{ts,tsx}'",
     "lint:fix": "eslint 'src/**/*.{ts,tsx}' --fix",

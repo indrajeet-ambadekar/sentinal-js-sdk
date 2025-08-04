@@ -25,10 +25,10 @@ const defaultConfig: LoggerConfig = {
 // Internal config state
 let config: LoggerConfig = { ...defaultConfig };
 
-export function initSentinal(userConfig: Partial<LoggerConfig>) {
+export function initsentinal(userConfig: Partial<LoggerConfig>) {
   if (!userConfig.projectKey || userConfig.projectKey.length === 0) {
     throw new Error(
-      "Sentinal project key is missing. Please visit https://sentinal.reviewmonk.io to obtain a project key",
+      "sentinal project key is missing. Please visit https://sentinal.reviewmonk.io to obtain a project key",
     );
   }
 
@@ -63,7 +63,7 @@ export function initSentinal(userConfig: Partial<LoggerConfig>) {
     sandbox: userConfig.sandbox ?? defaultConfig.sandbox,
   };
 
-  internalLog.log("Sentinal API base URL:", config.apiUrl);
+  internalLog.log("sentinal API base URL:", config.apiUrl);
   initBuffer(config);
 
   if (isBrowser) {

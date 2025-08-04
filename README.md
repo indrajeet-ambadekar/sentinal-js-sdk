@@ -1,6 +1,6 @@
-# Sentinal JS SDK
+# sentinal JS SDK
 
-A lightweight, framework-agnostic JavaScript logging SDK that captures logs, errors, and exceptions from client-side and server-side applications, and forwards them to the Sentinal log ingestion API.
+A lightweight, framework-agnostic JavaScript logging SDK that captures logs, errors, and exceptions from client-side and server-side applications, and forwards them to the sentinal log ingestion API.
 
 ## Features
 
@@ -50,7 +50,7 @@ configureLogger({
 });
 
 // The rest of your application code...
-console.log('This will be captured by Sentinal');
+console.log('This will be captured by sentinal');
 ```
 
 ## Configuration Options
@@ -59,8 +59,8 @@ You must call `configureLogger(config)` before using the logger. Here’s a list
 
 | Key              | Type               | Required | Description                                                                  |
 |------------------|--------------------|----------|------------------------------------------------------------------------------|
-| `projectKey`     | `string`           | ✅       | Your Sentinal project key.                                                   |
-| `apiUrl`         | `string`           | ❌       | Custom API endpoint for self-hosted Sentinal backend.                        |
+| `projectKey`     | `string`           | ✅       | Your sentinal project key.                                                   |
+| `apiUrl`         | `string`           | ❌       | Custom API endpoint for self-hosted sentinal backend.                        |
 | `flushInterval`  | `number` (ms)      | ❌       | How frequently to flush logs. Default: `2000`                                |
 | `bufferLimit`    | `number`           | ❌       | Max logs to buffer before flushing. Default: `10`                            |
 | `retries`        | `number`           | ❌       | Retry attempts on failure. Default: `3`                                      |
@@ -102,7 +102,7 @@ Logs sent to the server follow this structure:
 To enable SDK debug logs in development:
 
 ```js
-localStorage.setItem('SENTINAL_DEBUG', 'true');
+localStorage.setItem('sentinal_DEBUG', 'true');
 ```
 
 ## License

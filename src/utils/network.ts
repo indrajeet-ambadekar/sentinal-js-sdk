@@ -6,7 +6,7 @@ import { LogEntry } from "../types.js";
 const isNode = typeof window === "undefined";
 const isDev =
   process.env.NODE_ENV === "development" ||
-  process.env.SENTINAL_ALLOW_INSECURE === "true";
+  process.env.sentinal_ALLOW_INSECURE === "true";
 
 // src/util/network.ts
 export async function sendLogToAPI(
@@ -16,7 +16,7 @@ export async function sendLogToAPI(
 ) {
   try {
     if (!projectKey)
-      throw new Error(`INVALID SENTINAL PROJECT KEY: ${projectKey}`);
+      throw new Error(`INVALID sentinal PROJECT KEY: ${projectKey}`);
     const res = await fetch(endpoint, {
       method: "POST",
       headers: {

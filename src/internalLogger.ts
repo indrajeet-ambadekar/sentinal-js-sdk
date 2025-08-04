@@ -7,8 +7,8 @@ const originalConsole = {
 };
 
 export const internalLog = {
-  log: (...args: any[]) => originalConsole.log("[Sentinal]", ...args),
-  info: (...args: any[]) => originalConsole.info("[Sentinal]", ...args),
-  warn: (...args: any[]) => originalConsole.warn("[Sentinal]", ...args),
-  error: (...args: any[]) => originalConsole.error("[Sentinal]", ...args),
+  log: (...args: any[]) => originalConsole.log("[sentinal]", ...args),
+  info: (...args: any[]) => originalConsole.info("[sentinal]", ...args),
+  warn: (...args: any[]) => originalConsole.warn("[sentinal]", ...args),
+  error: (...args: any[]) => originalConsole.error("[sentinal]", ...args),
 };

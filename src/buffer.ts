@@ -17,7 +17,7 @@ export function initBuffer(userConfig: LoggerConfig) {
 
 function ensureInitialized() {
   if (!config) {
-    throw new Error("Logger not initialized. Call initSentinal() first.");
+    throw new Error("Logger not initialized. Call initsentinal() first.");
   }
 }
 
