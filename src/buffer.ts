@@ -138,7 +138,6 @@ function send(batch: LogEntry[], retriesLeft: number) {
 
   checkServerHealth(config.apiUrl).then((isAlive) => {
     if (!isAlive) {
-      internalLog.log(`[Sentinal Monitor Dump]`, JSON.stringify(batch));
       return;
     }
 

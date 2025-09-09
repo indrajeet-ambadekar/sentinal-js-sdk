@@ -1,6 +1,6 @@
 {
   "name": "sentinal-monitor",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "type": "module",
   "main": "dist/node/index.js",
   "types": "dist/node/index.d.ts",
