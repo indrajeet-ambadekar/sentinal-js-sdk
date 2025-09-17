@@ -91,26 +91,27 @@ export function flush() {
   send(batch, config.retries);
 }
 
-function checkServerHealth(url: string): Promise<boolean> {
+function checkServerHealth(url: string, projectKey: string): Promise<boolean> {
   // internalLog.log(`[Health Check] GET: ${url}`);
 
-  return fetch(url, { method: "GET" })
+  return fetch(url, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "sentinal-project-key": projectKey,
+    },
+  })
     .then(async (res) => {
       const body = await res.json().catch(() => ({}));
 
       const expected = {
-        message: "Cannot GET /server/log",
-        error: "Not Found",
-        statusCode: 404,
+        message: "active",
+        statusCode: 200,
       };
+      const isExpected200 =
+        res.status === expected.statusCode && body.message === expected.message;
 
-      const isExpected404 =
-        res.status === 404 &&
-        body.message === expected.message &&
-        body.error === expected.error &&
-        body.statusCode === expected.statusCode;
-
-      if (isExpected404) {
+      if (isExpected200) {
         // internalLog.log(
         //   `[Health Check Success] Server is up. Received expected 404.`,
         // );
@@ -136,7 +137,7 @@ function send(batch: LogEntry[], retriesLeft: number) {
     return;
   }
 
-  checkServerHealth(config.apiUrl).then((isAlive) => {
+  checkServerHealth(config.apiUrl, config.projectKey).then((isAlive) => {
     if (!isAlive) {
       return;
     }
